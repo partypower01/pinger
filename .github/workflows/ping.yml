@@ -13,5 +13,5 @@ jobs:
         run: |
           curl -X POST \
             -H "Content-Type: application/json" \
-            -d '{"text": "team status: Check Workflow en controleer agents om de 10 minuten & healthcheck"}' \
+            -d '{"event": "team.message", "payload": {"message": "team status: Healthcheck & workflow check en controleer agents op activiteit"}}' \
             "https://api.enginelabs.ai/webhooks/agent-teams/blms6sl0wavmbwqa03fks"
