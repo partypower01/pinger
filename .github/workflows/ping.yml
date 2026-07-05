@@ -10,18 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Send Webhook Ping
-        env:
-          WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
         run: |
-          BODY='{"event":"team.message","payload":{"message":"team status: Check Workflow en controleer agents om de 10 minuten & healthcheck"}}'
-          if [ -n "$WEBHOOK_SECRET" ]; then
-            SIG="sha256=$(echo -n "$BODY" | openssl dgst -sha256 -hmac "$WEBHOOK_SECRET" | awk '{print $2}')"
-            curl -i -X POST https://api.enginelabs.ai/webhooks/agent-teams/blms6sl0wavmbwqa03fks \
-              -H "Content-Type: application/json" \
-              -H "X-Webhook-Signature: $SIG" \
-              -d "$BODY"
-          else
-            curl -i -X POST https://api.enginelabs.ai/webhooks/agent-teams/blms6sl0wavmbwqa03fks \
-              -H "Content-Type: application/json" \
-              -d "$BODY"
-          fi
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -d '{"text": "team status: Check Workflow en controleer agents om de 10 minuten & healthcheck"}' \
+            "https://api.enginelabs.ai/webhooks/agent-teams/blms6sl0wavmbwqa03fks"
