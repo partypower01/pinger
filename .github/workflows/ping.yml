@@ -10,8 +10,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Send Webhook Ping
+        env:
+          WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
+          PAYLOAD: '{"event": "team.message", "payload": {"message": "team status: Check Workflow en controleer agents om de 10 minuten & healthcheck"}}'
         run: |
+          # Compute the HMAC-SHA256 signature in python safely using env variables
+          SIGNATURE=$(python3 -c "import hmac, hashlib, os; secret=os.environ['WEBHOOK_SECRET'].encode('utf-8'); payload=os.environ['PAYLOAD'].encode('utf-8'); print(hmac.new(secret, payload, hashlib.sha256).hexdigest())")
+          
+          # Send the request with the custom X-Webhook-Signature header
           curl -X POST \
             -H "Content-Type: application/json" \
-            -d '{"event": "team.message", "payload": {"message": "team status: Healthcheck & workflow check en controleer agents op activiteit"}}' \
+            -H "X-Webhook-Signature: sha256=$SIGNATURE" \
+            -d "$PAYLOAD" \
             "https://api.enginelabs.ai/webhooks/agent-teams/blms6sl0wavmbwqa03fks"
